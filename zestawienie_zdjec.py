@@ -32,16 +32,25 @@ for table in tree.iter('product'):
         except AttributeError:
             pass
 print(xml_products)
-#pobiez_wszystkie_produkty = True
-#while pobiez_wszystkie_produkty:
-response_data = vendoApi.getJson ('/json/reply/Magazyn_Towary_Lista', {"Token":vendoApi.USER_TOKEN,"Model":{"Aktywnosci": [
-                                                                            "Aktywny"
-                                                                        ],
-                                                                        "Rodzaje1": [
-                                                                            "Towar"
-                                                                        ],
-                                                                        "ZwracanePola": [
-                                                                        "Kod"
-                                                                        ],"Strona":{"Indeks":0,"LiczbaRekordow":1000}}})
-print(response_data)
+Vendo_all_products = []
+index_start = 0
+pobiez_wszystkie_produkty = True
+while pobiez_wszystkie_produkty:
+    response_data = vendoApi.getJson ('/json/reply/Magazyn_Towary_Lista', {"Token":vendoApi.USER_TOKEN,"Model":{"Aktywnosci": [
+                                                                                "Aktywny"
+                                                                            ],
+                                                                            "Rodzaje1": [
+                                                                                "Towar"
+                                                                            ],
+                                                                            "ZwracanePola": [
+                                                                            "Kod"
+                                                                            ],"Strona":{"Indeks":index_start,"LiczbaRekordow":1000}}})
+    repo_items = response_data['Wynik']['Rekordy']
+    for item in repo_items:
+        Vendo_all_products.append(item['Kod'])
+
+    index_start +=1000
+    if int(response_data['Wynik']['Strona']['LiczbaRekordow']) < 1000:
+        pobiez_wszystkie_produkty = False
+print(len(Vendo_all_products))
         
