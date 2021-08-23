@@ -1,6 +1,15 @@
 import requests
 import xml.etree.ElementTree as ET 
 import re
+from vendoasg.vendoasg import Vendo
+import configparser
+config = configparser.ConfigParser()
+config.read('setings.ini')
+
+# połączenie z bazą vendo TATOWĄ
+vendoApi = Vendo(config.get('vendo','vendo_API_port'))
+vendoApi.logInApi(config.get('vendo','logInApi_user'),config.get('vendo','logInApi_pass'))
+vendoApi.loginUser(config.get('vendo','loginUser_user'),config.get('vendo','loginUser_pass'))
 
 xml_path = 'https://asgard.gifts/www/xml/product_images.xml'
 user_agent = {'User-agent': 'Mozilla/5.0' ,'accept': 'application/xml;q=0.9, */*;q=0.8'}
@@ -23,3 +32,16 @@ for table in tree.iter('product'):
         except AttributeError:
             pass
 print(xml_products)
+#pobiez_wszystkie_produkty = True
+#while pobiez_wszystkie_produkty:
+response_data = vendoApi.getJson ('/json/reply/Magazyn_Towary_Lista', {"Token":vendoApi.USER_TOKEN,"Model":{"Aktywnosci": [
+                                                                            "Aktywny"
+                                                                        ],
+                                                                        "Rodzaje1": [
+                                                                            "Towar"
+                                                                        ],
+                                                                        "ZwracanePola": [
+                                                                        "Kod"
+                                                                        ],"Strona":{"Indeks":0,"LiczbaRekordow":1000}}})
+print(response_data)
+        
